@@ -1,0 +1,9 @@
+target/
+.mvn/wrapper/maven-wrapper.jar
+src/main/resources/keys/private.pem
+.idea/
+*.iml
+.classpath
+.project
+.settings/
+.vscode/
