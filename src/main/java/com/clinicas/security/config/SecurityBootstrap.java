@@ -92,6 +92,16 @@ public class SecurityBootstrap {
                 return usuarioRepository.save(u);
             });
             ensureUsuarioRol(admin, roles.get("ADMINISTRADOR"));
+
+            Usuario recepcion = usuarioRepository.findByUsername("recepcion").orElseGet(() -> {
+                Usuario u = new Usuario();
+                u.setUsername("recepcion");
+                u.setEmail("recepcion@clinicas.local");
+                u.setPassword(passwordEncoder.encode("Recep123!"));
+                u.setActivo(true);
+                return usuarioRepository.save(u);
+            });
+            ensureUsuarioRol(recepcion, roles.get("RECEPCIONISTA"));
         }
 
         private Rol ensureRol(String nombre) {
