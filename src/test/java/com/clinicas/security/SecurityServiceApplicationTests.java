@@ -128,6 +128,22 @@ class SecurityServiceApplicationTests {
                 .andExpect(status().isForbidden());
     }
 
+    @Test
+    void menuDinamicoUsuarioAutenticadoDevuelveEstructuraJerarquica() throws Exception {
+        String tokenAdmin = login("admin", "Admin123!");
+        mockMvc.perform(get("/api/security/usuarios/me/menu").header("Authorization", "Bearer " + tokenAdmin))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[?(@.nombre == 'Seguridad')]").exists())
+                .andExpect(jsonPath("$[?(@.nombre == 'Seguridad')].submodulos[0]").exists())
+                .andExpect(jsonPath("$[?(@.nombre == 'Medicos')].submodulos[0].nombre").value("Especialidades"));
+
+        String tokenRecep = login("recepcion", "Recep123!");
+        mockMvc.perform(get("/api/security/usuarios/me/menu").header("Authorization", "Bearer " + tokenRecep))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[?(@.nombre == 'Seguridad')]").doesNotExist())
+                .andExpect(jsonPath("$[?(@.nombre == 'Pacientes')]").exists());
+    }
+
     private String login(String username, String password) throws Exception {
         String body = mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)

@@ -2,10 +2,15 @@ package com.clinicas.security.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "rol")
@@ -15,7 +20,12 @@ public class Rol {
     @Column(name = "id_rol")
     private Long idRol;
 
-    @Column(nullable = false, unique = true, length = 80)
+    /** Sistema al que pertenece este rol. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_sistema")
+    private Sistema sistema;
+
+    @Column(nullable = false, unique = true, length = 100)
     private String nombre;
 
     @Column(length = 255)
@@ -24,7 +34,16 @@ public class Rol {
     @Column(nullable = false)
     private Boolean activo = true;
 
+    @Column(name = "fecha_creacion", nullable = false, updatable = false)
+    private LocalDateTime fechaCreacion;
+
     public Rol() {
+    }
+
+    @PrePersist
+    void prePersist() {
+        if (fechaCreacion == null) fechaCreacion = LocalDateTime.now();
+        if (activo == null) activo = true;
     }
 
     public Long getIdRol() {
@@ -33,6 +52,14 @@ public class Rol {
 
     public void setIdRol(Long idRol) {
         this.idRol = idRol;
+    }
+
+    public Sistema getSistema() {
+        return sistema;
+    }
+
+    public void setSistema(Sistema sistema) {
+        this.sistema = sistema;
     }
 
     public String getNombre() {
@@ -58,4 +85,13 @@ public class Rol {
     public void setActivo(Boolean activo) {
         this.activo = activo;
     }
+
+    public LocalDateTime getFechaCreacion() {
+        return fechaCreacion;
+    }
+
+    public void setFechaCreacion(LocalDateTime fechaCreacion) {
+        this.fechaCreacion = fechaCreacion;
+    }
 }
+

@@ -6,9 +6,11 @@ import jakarta.validation.constraints.Size;
 
 public record UsuarioRequest(
         @NotBlank @Size(max = 80) String username,
+        @Size(max = 100) String nombres,
+        @Size(max = 100) String apellidos,
         @Size(min = 8, max = 120) String password,
         @Email @Size(max = 160) String email,
         Long medicoId,
         Boolean activo
-) {
-}
+) {}
+

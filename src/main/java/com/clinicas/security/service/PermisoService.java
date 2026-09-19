@@ -31,9 +31,13 @@ public class PermisoService {
 
     @Transactional
     public PermisoResponse crear(PermisoRequest request) {
-        if (permisoRepository.existsByNombre(request.nombre())) throw new BusinessRuleException("Ya existe un permiso con ese nombre");
+        if (permisoRepository.existsByNombre(request.nombre()))
+            throw new BusinessRuleException("Ya existe un permiso con ese nombre");
+        if (permisoRepository.existsByCodigo(request.codigo()))
+            throw new BusinessRuleException("Ya existe un permiso con ese codigo");
         Permiso p = new Permiso();
         p.setNombre(request.nombre());
+        p.setCodigo(request.codigo());
         p.setDescripcion(request.descripcion());
         p.setActivo(request.activo() == null ? true : request.activo());
         return toResponse(permisoRepository.save(p));
@@ -41,9 +45,11 @@ public class PermisoService {
 
     @Transactional
     public PermisoResponse actualizar(Long id, PermisoRequest request) {
-        if (permisoRepository.existsByNombreAndIdPermisoNot(request.nombre(), id)) throw new BusinessRuleException("Ya existe un permiso con ese nombre");
+        if (permisoRepository.existsByNombreAndIdPermisoNot(request.nombre(), id))
+            throw new BusinessRuleException("Ya existe un permiso con ese nombre");
         Permiso p = permiso(id);
         p.setNombre(request.nombre());
+        p.setCodigo(request.codigo());
         p.setDescripcion(request.descripcion());
         if (request.activo() != null) p.setActivo(request.activo());
         return toResponse(p);
@@ -57,10 +63,14 @@ public class PermisoService {
     }
 
     public Permiso permiso(Long id) {
-        return permisoRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Permiso no encontrado: " + id));
+        return permisoRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Permiso no encontrado: " + id));
     }
 
     private PermisoResponse toResponse(Permiso permiso) {
-        return new PermisoResponse(permiso.getIdPermiso(), permiso.getNombre(), permiso.getDescripcion(), permiso.getActivo());
+        return new PermisoResponse(
+                permiso.getIdPermiso(), permiso.getNombre(), permiso.getCodigo(),
+                permiso.getDescripcion(), permiso.getActivo(), permiso.getFechaCreacion()
+        );
     }
 }

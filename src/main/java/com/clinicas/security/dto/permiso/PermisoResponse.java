@@ -1,4 +1,13 @@
 package com.clinicas.security.dto.permiso;
 
-public record PermisoResponse(Long idPermiso, String nombre, String descripcion, Boolean activo) {
-}
+import java.time.LocalDateTime;
+
+public record PermisoResponse(
+        Long idPermiso,
+        String nombre,
+        String codigo,
+        String descripcion,
+        Boolean activo,
+        LocalDateTime fechaCreacion
+) {}
+

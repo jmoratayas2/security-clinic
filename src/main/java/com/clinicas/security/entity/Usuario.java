@@ -18,8 +18,17 @@ public class Usuario {
     @Column(name = "id_usuario")
     private Long idUsuario;
 
-    @Column(nullable = false, unique = true, length = 80)
+    /** Nombre de usuario para autenticación (login). Único y obligatorio. */
+    @Column(name = "nombre_usuario", nullable = false, unique = true, length = 80)
     private String username;
+
+    /** Nombre(s) de la persona. */
+    @Column(length = 100)
+    private String nombres;
+
+    /** Apellidos de la persona. */
+    @Column(length = 100)
+    private String apellidos;
 
     @Column(nullable = false)
     private String password;
@@ -56,6 +65,22 @@ public class Usuario {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getNombres() {
+        return nombres;
+    }
+
+    public void setNombres(String nombres) {
+        this.nombres = nombres;
+    }
+
+    public String getApellidos() {
+        return apellidos;
+    }
+
+    public void setApellidos(String apellidos) {
+        this.apellidos = apellidos;
     }
 
     public String getPassword() {

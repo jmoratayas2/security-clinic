@@ -44,11 +44,16 @@ public class UsuarioService {
 
     @Transactional
     public UsuarioResponse crear(UsuarioRequest request) {
-        if (request.password() == null || request.password().isBlank()) throw new BusinessRuleException("El password es obligatorio");
-        if (usuarioRepository.existsByUsername(request.username())) throw new BusinessRuleException("Ya existe un usuario con ese username");
-        if (request.email() != null && !request.email().isBlank() && usuarioRepository.existsByEmail(request.email())) throw new BusinessRuleException("Ya existe un usuario con ese email");
+        if (request.password() == null || request.password().isBlank())
+            throw new BusinessRuleException("El password es obligatorio");
+        if (usuarioRepository.existsByUsername(request.username()))
+            throw new BusinessRuleException("Ya existe un usuario con ese username");
+        if (request.email() != null && !request.email().isBlank() && usuarioRepository.existsByEmail(request.email()))
+            throw new BusinessRuleException("Ya existe un usuario con ese email");
         Usuario u = new Usuario();
         u.setUsername(request.username());
+        u.setNombres(request.nombres());
+        u.setApellidos(request.apellidos());
         u.setPassword(passwordEncoder.encode(request.password()));
         u.setEmail(blankToNull(request.email()));
         u.setMedicoId(request.medicoId());
@@ -59,10 +64,16 @@ public class UsuarioService {
     @Transactional
     public UsuarioResponse actualizar(Long id, UsuarioRequest request) {
         Usuario u = usuario(id);
-        if (usuarioRepository.existsByUsernameAndIdUsuarioNot(request.username(), id)) throw new BusinessRuleException("Ya existe un usuario con ese username");
-        if (request.email() != null && !request.email().isBlank() && usuarioRepository.existsByEmailAndIdUsuarioNot(request.email(), id)) throw new BusinessRuleException("Ya existe un usuario con ese email");
+        if (usuarioRepository.existsByUsernameAndIdUsuarioNot(request.username(), id))
+            throw new BusinessRuleException("Ya existe un usuario con ese username");
+        if (request.email() != null && !request.email().isBlank()
+                && usuarioRepository.existsByEmailAndIdUsuarioNot(request.email(), id))
+            throw new BusinessRuleException("Ya existe un usuario con ese email");
         u.setUsername(request.username());
-        if (request.password() != null && !request.password().isBlank()) u.setPassword(passwordEncoder.encode(request.password()));
+        u.setNombres(request.nombres());
+        u.setApellidos(request.apellidos());
+        if (request.password() != null && !request.password().isBlank())
+            u.setPassword(passwordEncoder.encode(request.password()));
         u.setEmail(blankToNull(request.email()));
         u.setMedicoId(request.medicoId());
         if (request.activo() != null) u.setActivo(request.activo());
@@ -104,17 +115,24 @@ public class UsuarioService {
     }
 
     public Usuario usuario(Long id) {
-        return usuarioRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado: " + id));
+        return usuarioRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado: " + id));
     }
 
     private Rol rol(Long id) {
-        return rolRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Rol no encontrado: " + id));
+        return rolRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Rol no encontrado: " + id));
     }
 
     private UsuarioResponse toResponse(Usuario usuario) {
-        List<String> roles = usuarioRolRepository.findRolesActivos(usuario.getIdUsuario()).stream().map(Rol::getNombre).sorted().toList();
-        return new UsuarioResponse(usuario.getIdUsuario(), usuario.getUsername(), usuario.getEmail(), usuario.getActivo(),
-                usuario.getMedicoId(), usuario.getCreadoEn(), usuario.getActualizadoEn(), roles);
+        List<String> roles = usuarioRolRepository.findRolesActivos(usuario.getIdUsuario())
+                .stream().map(Rol::getNombre).sorted().toList();
+        return new UsuarioResponse(
+                usuario.getIdUsuario(), usuario.getUsername(),
+                usuario.getNombres(), usuario.getApellidos(),
+                usuario.getEmail(), usuario.getActivo(),
+                usuario.getMedicoId(), usuario.getCreadoEn(), usuario.getActualizadoEn(), roles
+        );
     }
 
     private String blankToNull(String value) {

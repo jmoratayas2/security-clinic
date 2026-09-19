@@ -1,15 +1,18 @@
 package com.clinicas.security.controller;
 
+import com.clinicas.security.dto.modulo.MenuModuloResponse;
 import com.clinicas.security.dto.rol.AsignarRolRequest;
 import com.clinicas.security.dto.usuario.EstadoRequest;
 import com.clinicas.security.dto.usuario.UsuarioRequest;
 import com.clinicas.security.dto.usuario.UsuarioResponse;
+import com.clinicas.security.service.ModuloService;
 import com.clinicas.security.service.UsuarioService;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,9 +26,16 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/security/usuarios")
 public class UsuarioController {
     private final UsuarioService usuarioService;
+    private final ModuloService moduloService;
 
-    public UsuarioController(UsuarioService usuarioService) {
+    public UsuarioController(UsuarioService usuarioService, ModuloService moduloService) {
         this.usuarioService = usuarioService;
+        this.moduloService = moduloService;
+    }
+
+    @GetMapping("/me/menu")
+    public List<MenuModuloResponse> miMenu(Authentication authentication) {
+        return moduloService.obtenerMenuPorUsername(authentication.getName());
     }
 
     @GetMapping

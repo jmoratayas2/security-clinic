@@ -1,12 +1,10 @@
-package com.clinicas.security.dto.permiso;
+package com.clinicas.security.dto.sistema;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-public record PermisoRequest(
+public record SistemaRequest(
         @NotBlank @Size(max = 100) String nombre,
-        @NotBlank @Size(max = 100) String codigo,
-        @Size(max = 255) String descripcion,
+        @Size(max = 100) String dominio,
         Boolean activo
 ) {}
-
