@@ -2,6 +2,7 @@ package com.clinicas.security.config;
 
 import com.clinicas.security.security.CustomUserDetailsService;
 import com.clinicas.security.security.JwtAuthoritiesConverter;
+import com.clinicas.security.security.RateLimitFilter;
 import jakarta.servlet.http.HttpServletResponse;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -43,11 +44,13 @@ public class SecurityConfig {
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthoritiesConverter jwtAuthoritiesConverter,
                                             AuthenticationEntryPoint authenticationEntryPoint,
-                                            AccessDeniedHandler accessDeniedHandler) throws Exception {
+                                            AccessDeniedHandler accessDeniedHandler,
+                                            RateLimitFilter rateLimitFilter) throws Exception {
         return http
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> {})
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .addFilterBefore(rateLimitFilter, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/login", "/actuator/health").permitAll()
                         .anyRequest().authenticated())

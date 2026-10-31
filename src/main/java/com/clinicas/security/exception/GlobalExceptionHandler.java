@@ -29,9 +29,21 @@ public class GlobalExceptionHandler {
         return build(HttpStatus.BAD_REQUEST, "BAD_REQUEST", "Solicitud invalida", List.of());
     }
 
+    @ExceptionHandler(TurnstileValidationException.class)
+    ResponseEntity<ApiError> turnstileFailed(TurnstileValidationException ex) {
+        return build(HttpStatus.BAD_REQUEST, "CAPTCHA_FAILED", ex.getMessage(), List.of());
+    }
+
+    @ExceptionHandler(AccountLockedException.class)
+    ResponseEntity<ApiError> accountLocked(AccountLockedException ex) {
+        return build(HttpStatus.LOCKED, "ACCOUNT_LOCKED", ex.getMessage(),
+                List.of("La cuenta se desbloqueara automaticamente tras 15 minutos."));
+    }
+
     @ExceptionHandler(BadCredentialsException.class)
     ResponseEntity<ApiError> unauthorized(BadCredentialsException ex) {
-        return build(HttpStatus.UNAUTHORIZED, "UNAUTHORIZED", "Credenciales invalidas", List.of());
+        String msg = (ex.getMessage() != null && !ex.getMessage().isBlank()) ? ex.getMessage() : "Credenciales invalidas";
+        return build(HttpStatus.UNAUTHORIZED, "UNAUTHORIZED", msg, List.of());
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
