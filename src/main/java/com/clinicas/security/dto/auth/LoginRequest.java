@@ -7,4 +7,7 @@ public record LoginRequest(
         @NotBlank String password,
         String turnstileToken
 ) {
+    public LoginRequest(String username, String password) {
+        this(username, password, null);
+    }
 }
